@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servidor Apache - Módulo 4</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            border-top: 5px solid #007bff;
+            max-width: 500px;
+        }
+        h1 { color: #007bff; margin-bottom: 0.5rem; font-size: 2.2rem; }
+        p { font-size: 1.1rem; color: #666; margin-bottom: 1.5rem; }
+        .status {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 8px 20px;
+            background-color: #28a745;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+        .footer { 
+            margin-top: 2.5rem; 
+            font-size: 0.9rem; 
+            color: #555; 
+            border-top: 1px solid #eee;
+            padding-top: 1rem;
+            line-height: 1.6;
+        }
+        .data { font-weight: bold; color: #333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Servidor Web Activo</h1>
+        <p>El Virtual Host ha sido configurado correctamente en Apache2 y está sirviendo contenido.</p>
+        
+        <div class="status">✓ Conexión Exitosa</div>
+
+
+        <div class="footer">
+            Práctica de Sistemas Operativos III | ITLA <br>
+            Estudiante: <span class="data">Denzel Omar Sánchez</span> <br>
+            Matrícula: <span class="data">2025-0823</span>
+        </div>
+    </div>
+</body>
+</html>
