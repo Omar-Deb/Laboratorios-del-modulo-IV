@@ -1,0 +1,94 @@
+﻿Bitácora Unificada: Servicios de Red y Administración (SO3)
+Temas: Servidor Web (Apache), Correo (Postfix) y Servidor de Impresión (CUPS)
+________________
+
+
+## Práctica 1: Servidor Web Apache2 y Virtual Hosts
+En esta práctica se configuró un servidor web capaz de alojar múltiples sitios (Virtual Hosting) en una sola dirección IP.
+Bash
+sudo apt install apache2                      # Instala el servidor web Apache2
+sudo systemctl status apache2                 # Verifica que el servicio esté activo y corriendo
+clear                                         # Limpia la pantalla
+# cd /etc/www/html                            # (Comando fallido, ruta incorrecta)
+cd /var/www/html                              # Entra al directorio raíz donde se alojan las webs
+ls                                            # Lista los archivos actuales
+sudo mkdir holamundo.com                      # Crea una carpeta para el primer sitio virtual
+ls                                            # Verifica la creación de la carpeta
+cd holamundo.com/                             # Entra a la carpeta del sitio
+sudo nano index.html                          # Crea y edita la página de inicio del sitio
+cat index.html                                # Muestra el contenido HTML creado
+clear                                         # Limpia la pantalla
+cd /etc/apache2/sites-available/              # Carpeta donde se guardan los archivos de configuración de sitios
+sudo cp 000-default.conf holamundo.conf       # Copia la plantilla base para el nuevo sitio
+sudo nano holamundo.conf                      # Configura el ServerName y DocumentRoot del sitio
+sudo a2ensite holamundo.conf                  # Habilita el nuevo sitio virtual en Apache
+sudo a2dissite 000-default.conf               # Deshabilita el sitio por defecto de Apache
+sudo systemctl reload apache2                 # Recarga la configuración sin detener el servicio
+ip a                                          # Consulta la IP del servidor para probar en el navegador
+cd /etc/apache2/                              # Entra a la configuración principal de Apache
+sudo nano ports.conf                          # Edita los puertos de escucha (ej. cambiar el 80 por otro)
+cd /var/www/html/                             # Regresa a la ruta de las webs
+sudo mkdir datos.com                          # Crea carpeta para un segundo sitio virtual
+sudo nano index.html                          # Edita el index (posible error de ruta, se corrige abajo)
+cd datos.com/                                 # Entra a la carpeta del segundo sitio
+sudo nano index.html                          # Crea la página de inicio para datos.com
+cat index.html                                # Verifica el contenido
+cd /etc/apache2/sites-available/              # Regresa a la configuración de sitios
+sudo cp holamundo.conf datos.conf             # Copia la configuración anterior para el nuevo sitio
+sudo nano datos.conf                          # Ajusta las rutas y nombres para datos.com
+sudo a2ensite datos.conf                      # Habilita el segundo sitio
+systemctl reload apache2                      # Aplica los cambios finales
+date                                          # Registra fecha y hora
+history                                       # Muestra historial de la práctica
+
+
+________________
+
+
+## Práctica 2: Servidor de Correo Postfix con Relay de Gmail
+Configuración de un agente de transferencia de correo (MTA) para enviar correos usando los servidores de Google como puente (Relay).
+### Flujo de Configuración
+1. Instalación: sudo apt install postfix (Seleccionar "Sitio de Internet").
+2. Reconfiguración: sudo dpkg-reconfigure postfix (Establecer nombre de host y opciones de red).
+3. Credenciales de Gmail:
+   * Crear una "Contraseña de Aplicación" en la cuenta de Google.
+   * Guardarla en /etc/postfix/sasl/sasl_passwd con el formato: [smtp.gmail.com]:587 usuario@gmail.com:contraseña_aplicacion.
+### Comandos Ejecutados
+Bash
+sudo systemctl restart postfix                # Reinicia el servicio para aplicar cambios iniciales
+sudo apt install mailutils                    # Instala herramientas para enviar correos desde terminal
+sudo nano /etc/postfix/sasl/sasl_passwd       # Crea el archivo con las credenciales de Gmail
+sudo postmap /etc/postfix/sasl/sasl_passwd    # Encripta el archivo de contraseñas para Postfix
+sudo chmod 600 /etc/postfix/sasl/sasl_passwd  # Protege el archivo (solo lectura para root)
+sudo chmod 600 /etc/postfix/sasl/sasl_passwd.db # Protege la base de datos de contraseñas
+sudo nano /etc/postfix/main.cf                 # Configuración principal (Relayhost y parámetros SASL)
+# Dentro de main.cf se define: relayhost = [smtp.gmail.com]:587 y seguridad TLS
+sudo systemctl restart postfix                # Aplica toda la configuración de relay
+sudo systemctl enable postfix                 # Configura el servicio para iniciar con el sistema
+sudo systemctl start postfix                  # Asegura que el servicio esté activo
+
+
+________________
+
+
+## Práctica 3: Servidor de Impresión CUPS
+Instalación y despliegue de un servidor de impresión para gestionar impresoras físicas y virtuales (PDF) en red.
+### Comandos de Instalación y Red
+Bash
+sudo apt install cups                         # Instala el Common Unix Printing System
+sudo apt install cups-pdf                     # Instala la impresora virtual que genera PDFs
+sudo systemctl status cups                    # Verifica que el servicio de impresión esté activo
+# Habilita administración remota desde cualquier IP
+cupsctl --remote-admin --remote-any --share-printers 
+sudo ufw allow 631/tcp                        # Abre el puerto 631 en el firewall para CUPS
+sudo ufw reload                               # Recarga las reglas del firewall
+
+
+### Gestión de Usuarios y Administración
+Para administrar las impresoras desde el navegador (https://IP-SERVIDOR:631), se creó un usuario específico:
+Bash
+sudo useradd -g lpadmin cupsadmin             # Crea usuario y lo añade al grupo de administración de impresión
+sudo passwd cupsadmin                         # Asigna contraseña al administrador de CUPS
+
+
+Nota Final de Configuración: En la interfaz web, se seleccionó "Add Printer" -> "CUPS-PDF" -> "Generic PostScript Printer" para habilitar la impresión remota a archivos PDF.
